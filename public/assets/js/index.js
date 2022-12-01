@@ -34,7 +34,9 @@ const getNotes = (notes) =>
     body: JSON.stringify(notes),
   })
   .then((response) => response.json())
-  .then((data) => data)
+  .then((data) => {
+    renderActiveNote(data)
+  })
      .catch((error) => {
     console.error('Error:', error);
   });
@@ -55,18 +57,29 @@ const saveNote = (note) =>
     console.error('Error:', error);
   });
 
-const deleteNote = (id) =>
-  fetch(`/api/notes/${id}`, {
+const deleteNote = async (id) => {
+  const response = await fetch(`/api/notes/${id}`, {
     method: 'DELETE',
     headers: {
       'Content-Type': 'application/json',
     },
   });
 
-const renderActiveNote = () => {
+  if (response.ok) {
+    document.location.replace('/notes');
+  } else {
+    alert("Failed to delete note");
+  }
+};
+
+const renderActiveNote = (data) => {
   hide(saveNoteBtn);
 
+  let checkNoteId = (data.note_id);
+  console.log(checkNoteId);
+
   if (activeNote.id) {
+    
     noteTitle.setAttribute('readonly', true);
     noteText.setAttribute('readonly', true);
     noteTitle.value = activeNote.title;
@@ -112,11 +125,12 @@ const handleNoteDelete = (e) => {
 // Sets the activeNote and displays it
 const handleNoteView = (e) => {
   e.preventDefault();
-  activeNote = JSON.parse(e.target.parentElement.getAttribute('data-note'));
+  activeNote.id = JSON.parse(e.target.parentElement.getAttribute('data-note'));
+  
   renderActiveNote();
 };
 
-// Sets the activeNote to and empty object and allows the user to enter a new note
+// Sets the activeNote to an empty object and allows the user to enter a new note
 const handleNewNoteView = (e) => {
   activeNote = {};
   renderActiveNote();
@@ -146,6 +160,7 @@ const renderNoteList = async () => {
   const createLi = (text, delBtn = true) => {
     const liEl = document.createElement('li');
     liEl.classList.add('list-group-item');
+    
 
     const spanEl = document.createElement('span');
     spanEl.classList.add('list-item-title');
@@ -177,6 +192,7 @@ const renderNoteList = async () => {
 
   jsonNotes.forEach((note) => {
     const li = createLi(note.title);
+    li.setAttribute('data-note', note.note_id);
     li.dataset.note = JSON.stringify(note);
 
     noteListItems.push(li);
