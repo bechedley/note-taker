@@ -14,7 +14,7 @@ Open the webpage and add a new note. You can also view or edit existing notes.
 
 Link to deployed app: (#)
 
-![Screenshot of app](#)
+![Screenshot of app](./public/assets/images/note-taker-screenshot.jpg)
 
 ## Credits
 
