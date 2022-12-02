@@ -31,6 +31,11 @@ const getNotes = () =>
     headers: {
       'Content-Type': 'application/json',
     },
+  })
+  .then((response) => response.json())
+  .then((data) => data)
+     .catch((error) => {
+    console.error('Error:', error);
   });
 
 const saveNote = (note) =>
@@ -40,24 +45,55 @@ const saveNote = (note) =>
       'Content-Type': 'application/json',
     },
     body: JSON.stringify(note),
+  })
+  .then((response) => response.json())
+  .then((data) => {
+  return data;
+  })
+  .catch((error) => {
+    console.error('Error:', error);
   });
 
-const deleteNote = (id) =>
-  fetch(`/api/notes/${id}`, {
+const deleteNote = async (note_id) => {
+  const response = await fetch(`/api/notes/${note_id}`, {
     method: 'DELETE',
     headers: {
       'Content-Type': 'application/json',
     },
   });
 
-const renderActiveNote = () => {
+  if (response.ok) {
+    document.location.replace('/notes');
+  } else {
+    alert("Failed to delete note");
+  }
+};
+
+const getActiveNotes = (notes) =>
+  fetch('/api/notes/note_id', {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(notes),
+  })
+  .then((response) => response.json())
+  .then((data) => {
+    renderActiveNote(data)
+  })
+     .catch((error) => {
+    console.error('Error:', error);
+  });
+
+const renderActiveNote = (activeNoteData) => {
   hide(saveNoteBtn);
 
-  if (activeNote.id) {
+  if (activeNoteData) {
+    
     noteTitle.setAttribute('readonly', true);
     noteText.setAttribute('readonly', true);
-    noteTitle.value = activeNote.title;
-    noteText.value = activeNote.text;
+    noteTitle.value = activeNoteData[0].title;
+    noteText.value = activeNoteData[0].text;
   } else {
     noteTitle.removeAttribute('readonly');
     noteText.removeAttribute('readonly');
@@ -68,12 +104,13 @@ const renderActiveNote = () => {
 
 const handleNoteSave = () => {
   const newNote = {
-    title: noteTitle.value,
-    text: noteText.value,
+    title: noteTitle.value.trim(),
+    text: noteText.value.trim(),
   };
-  saveNote(newNote).then(() => {
-    getAndRenderNotes();
-    renderActiveNote();
+
+  saveNote(newNote).then((data) => {
+    getAndRenderNotes(data);
+    renderActiveNote(data);
   });
 };
 
@@ -96,13 +133,26 @@ const handleNoteDelete = (e) => {
 };
 
 // Sets the activeNote and displays it
-const handleNoteView = (e) => {
+const handleNoteView = async (e) => {
   e.preventDefault();
-  activeNote = JSON.parse(e.target.parentElement.getAttribute('data-note'));
-  renderActiveNote();
+  let activeNote = JSON.parse(e.target.parentElement.getAttribute('data-note'));
+  
+  const response = await fetch(`/api/notes/${activeNote.note_id}`, {
+    method:'GET',
+    body: JSON.stringify(),
+    headers: { "Content-Type": "application/json" },
+  });
+
+  if (response.ok) {
+  let activeNote = await response.json();
+
+  renderActiveNote(activeNote);
+  } else {
+    alert("Error when retrieving active note!");
+  }
 };
 
-// Sets the activeNote to and empty object and allows the user to enter a new note
+// Sets the activeNote to an empty object and allows the user to enter a new note
 const handleNewNoteView = (e) => {
   activeNote = {};
   renderActiveNote();
@@ -117,7 +167,10 @@ const handleRenderSaveBtn = () => {
 };
 
 // Render the list of note titles
-const renderNoteList = async (notes) => {
+const renderNoteList = async () => {
+  const notes = await fetch('/api/notes', {
+    method: 'GET',
+  });
   let jsonNotes = await notes.json();
   if (window.location.pathname === '/notes') {
     noteList.forEach((el) => (el.innerHTML = ''));
@@ -129,6 +182,7 @@ const renderNoteList = async (notes) => {
   const createLi = (text, delBtn = true) => {
     const liEl = document.createElement('li');
     liEl.classList.add('list-group-item');
+    
 
     const spanEl = document.createElement('span');
     spanEl.classList.add('list-item-title');
@@ -160,6 +214,7 @@ const renderNoteList = async (notes) => {
 
   jsonNotes.forEach((note) => {
     const li = createLi(note.title);
+    li.setAttribute('data-note', note.note_id);
     li.dataset.note = JSON.stringify(note);
 
     noteListItems.push(li);
