@@ -9,11 +9,6 @@
         "note_id": "46459504-a946-43ed-a5f6-5e10d44a4d05"
     },
     {
-        "title": "New Note Again",
-        "text": "New note text again",
-        "note_id": "a03d36e6-2460-49e9-bac6-884c74e5bd56"
-    },
-    {
         "title": "Example Note",
         "text": "Example note text",
         "note_id": "413395b0-de0a-4f9a-91b0-b57481bb209d"
@@ -22,5 +17,10 @@
         "title": "Next Test Note",
         "text": "Test note text",
         "note_id": "0bf12100-5ad6-4004-9c10-c844d2a1a998"
+    },
+    {
+        "title": "Final test note",
+        "text": "Test note text final",
+        "note_id": "375740ab-fe18-43a6-acf0-17a98d8d8e5e"
     }
 ]
