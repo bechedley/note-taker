@@ -10,9 +10,9 @@ N/A
 
 ## Usage
 
-Open the webpage and add a new note. You can also view or edit existing notes.
+Open the webpage to view the Note Taker app. Existing notes will appear in the left hand column and can be clicked to view in the right hand text area. To clear an existing note from the right hand view and add a new note, click the plus icon in the navigation bar. Start typing your note title and note text and the save icon will appear. Click the save icon to save the content of your note, and it will appear in the left hand column of existing notes. Existing notes can be permanently deleted by clicking the delete icon next to the note name in the left hand column.
 
-Link to deployed app: (#)
+Link to deployed app: (https://bechedley-note-taker.herokuapp.com/)
 
 ![Screenshot of app](./public/assets/images/note-taker-screenshot.jpg)
 
