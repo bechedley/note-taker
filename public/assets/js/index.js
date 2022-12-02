@@ -69,21 +69,6 @@ const deleteNote = async (note_id) => {
   }
 };
 
-const getActiveNotes = (notes) =>
-  fetch('/api/notes/note_id', {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(notes),
-  })
-  .then((response) => response.json())
-  .then((data) => {
-    renderActiveNote(data)
-  })
-     .catch((error) => {
-    console.error('Error:', error);
-  });
 
 const renderActiveNote = (activeNoteData) => {
   hide(saveNoteBtn);
@@ -110,7 +95,7 @@ const handleNoteSave = () => {
 
   saveNote(newNote).then((data) => {
     getAndRenderNotes(data);
-    renderActiveNote(data);
+    renderActiveNote();
   });
 };
 
@@ -120,7 +105,8 @@ const handleNoteDelete = (e) => {
   e.stopPropagation();
 
   const note = e.target;
-  const noteId = JSON.parse(note.parentElement.getAttribute('data-note')).id;
+  const noteId = JSON.parse(note.parentElement.getAttribute('data-note')).note_id;
+  console.log(noteId);
 
   if (activeNote.id === noteId) {
     activeNote = {};
